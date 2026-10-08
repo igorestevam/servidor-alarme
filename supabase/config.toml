@@ -1,0 +1,7 @@
+project_id = "servidor-alarme"
+
+# A ESP32 nao envia o JWT do Supabase, so o header X-Device-Key.
+# Por isso desligamos a verificacao de JWT nesta funcao; a autenticacao
+# e feita pela propria funcao comparando a DEVICE_KEY.
+[functions.registrar-evento]
+verify_jwt = false

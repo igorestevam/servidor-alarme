@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Seguranca</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Sistema de Seguranca</h1>
+    <p class="subtitulo">Monitor de Movimento</p>
+
+    <section>
+      <h2>Sensores</h2>
+      <ul id="lista-sensores">
+        <li>Carregando...</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Ultimos eventos</h2>
+      <p id="status" class="status"></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Horario</th>
+            <th>Local</th>
+            <th>Evento</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-eventos">
+          <tr><td colspan="3">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
