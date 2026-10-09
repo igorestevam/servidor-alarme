@@ -17,7 +17,7 @@ CREATE TABLE configuracao (
 -- (No plano gratuito do Resend, sem dominio proprio, so e possivel enviar
 -- para o mesmo e-mail usado para criar a conta no Resend.)
 INSERT INTO configuracao (id, armado, email_destino)
-VALUES (1, FALSE, 'seu-email@gmail.com');
+VALUES (1, FALSE, 'igorestevam1900@gmail.com');
 
 -- ---------- Seguranca ----------
 -- O site pode ler APENAS a coluna "armado" (para mostrar o status).
