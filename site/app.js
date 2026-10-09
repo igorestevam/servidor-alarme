@@ -99,6 +99,63 @@ async function carregarEventos() {
   }
 }
 
+// ---------- Armar / desarmar ----------
+
+const URL_ALTERNAR = CONFIG.SUPABASE_URL + "/functions/v1/alternar-alarme";
+const statusAlarme = document.getElementById("status-alarme");
+const botaoAlarme = document.getElementById("botao-alarme");
+let alarmeArmado = null;
+
+function mostrarAlarme(armado) {
+  alarmeArmado = armado;
+  statusAlarme.textContent = armado ? "ARMADO" : "Desarmado";
+  statusAlarme.className = armado ? "armado" : "desarmado";
+  botaoAlarme.textContent = armado ? "Desarmar" : "Armar";
+  botaoAlarme.disabled = false;
+}
+
+async function carregarAlarme() {
+  const { data, error } = await cliente
+    .from("configuracao")
+    .select("armado")
+    .eq("id", 1)
+    .maybeSingle();
+
+  if (error || !data) {
+    console.error(error);
+    statusAlarme.textContent = "Erro ao carregar";
+    return;
+  }
+  mostrarAlarme(data.armado);
+}
+
+async function alternarAlarme() {
+  const senha = prompt("Digite a senha do alarme:");
+  if (!senha) return;
+
+  botaoAlarme.disabled = true;
+  try {
+    const resposta = await fetch(URL_ALTERNAR, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Key": senha },
+      body: JSON.stringify({ armado: !alarmeArmado }),
+    });
+    const json = await resposta.json();
+    if (!resposta.ok) {
+      alert(json.mensagem || "Erro ao alterar o alarme");
+    }
+  } catch (erro) {
+    console.error(erro);
+    alert("Nao foi possivel falar com o servidor");
+  }
+  await carregarAlarme(); // mostra o estado real salvo no banco
+}
+
+botaoAlarme.addEventListener("click", alternarAlarme);
+
 carregarSensores();
+carregarAlarme();
 carregarEventos();
 setInterval(carregarEventos, INTERVALO_MS);
+// O status tambem e atualizado periodicamente, caso seja alterado em outra aba.
+setInterval(carregarAlarme, INTERVALO_MS);

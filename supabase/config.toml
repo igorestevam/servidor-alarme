@@ -5,3 +5,7 @@ project_id = "servidor-alarme"
 # e feita pela propria funcao comparando a DEVICE_KEY.
 [functions.registrar-evento]
 verify_jwt = false
+
+# Protegida pela senha ADMIN_KEY, validada dentro da funcao.
+[functions.alternar-alarme]
+verify_jwt = false

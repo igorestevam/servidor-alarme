@@ -97,10 +97,32 @@ Sucesso: `{"ok": true, "mensagem": "Evento registrado", "id": 1}`
 | Content-Type | `application/json` |
 | JSON         | `{"sensor":"quarto-1","evento":"movimento"}` |
 
-## Futuro: notificacao por e-mail
+## Notificacao por e-mail
 
-A API ja chama `aoRegistrarEvento()` em
-`supabase/functions/registrar-evento/notificacoes.ts` logo depois de gravar
-cada evento. Hoje ela nao faz nada. Para adicionar o e-mail, so essa funcao
-precisa mudar (mais uma tabela de configuracao com `armado` e
-`email_destino`). Se o envio falhar, o evento continua salvo.
+Quando o alarme esta **armado**, cada movimento envia um e-mail (no maximo
+1 por minuto, para nao lotar a caixa de entrada). Os eventos sao sempre
+gravados no log, armado ou nao. O alarme e armado/desarmado por um botao
+no site, protegido por senha.
+
+Arquivos: `supabase/email.sql`, `supabase/functions/registrar-evento/notificacoes.ts`,
+`supabase/functions/alternar-alarme/index.ts`.
+
+### Configurar
+
+1. Crie uma conta em <https://resend.com> e gere uma API key (API Keys > Create).
+2. Edite o e-mail em `supabase/email.sql` (use o mesmo e-mail da conta do
+   Resend) e rode o arquivo no SQL Editor.
+3. No terminal:
+
+```powershell
+npx supabase secrets set RESEND_API_KEY=re_xxxxxxxx
+npx supabase secrets set ADMIN_KEY=senha-para-armar-o-alarme
+npx supabase functions deploy registrar-evento --no-verify-jwt
+npx supabase functions deploy alternar-alarme --no-verify-jwt
+```
+
+Para trocar o e-mail de destino depois:
+
+```sql
+UPDATE configuracao SET email_destino = 'novo@email.com' WHERE id = 1;
+```

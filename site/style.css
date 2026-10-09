@@ -32,6 +32,25 @@ section {
   color: #999;
 }
 
+.armado {
+  color: #c00;
+}
+
+.desarmado {
+  color: #080;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.dica {
+  font-size: 0.85em;
+  color: #666;
+}
+
 .status {
   font-size: 0.9em;
   color: #666;
