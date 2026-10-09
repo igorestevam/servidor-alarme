@@ -5,6 +5,6 @@
 // no site porque o RLS so permite leitura. NUNCA coloque aqui a
 // service_role nem a DEVICE_KEY.
 const CONFIG = {
-  SUPABASE_URL: "https://SEU-PROJETO.supabase.co",
-  SUPABASE_ANON_KEY: "SUA-CHAVE-PUBLICA",
+  SUPABASE_URL: "https://zocipzbjmhxwidvdqzyt.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_L2mALvFGYbQcVBzBZMa6bw_SqXVL6TE",
 };
