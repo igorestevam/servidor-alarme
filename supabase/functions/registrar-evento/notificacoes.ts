@@ -1,18 +1,11 @@
-// =====================================================================
-// Tudo que acontece DEPOIS que um evento e gravado no banco.
-//
-// Se o alarme estiver armado, envia um e-mail avisando do movimento.
-// Para nao lotar a caixa de entrada (o PIR dispara varias vezes
-// seguidas), envia no maximo 1 e-mail a cada INTERVALO_MINIMO_SEGUNDOS.
-// =====================================================================
+// Envia e-mail quando o alarme esta armado (no maximo 1 por minuto)
 
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 const INTERVALO_MINIMO_SEGUNDOS = 60;
 
-// Secrets definidos com "supabase secrets set".
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-// Sem dominio proprio no Resend, o remetente precisa ser onboarding@resend.dev
+// Sem dominio proprio, o Resend exige este remetente
 const EMAIL_REMETENTE = Deno.env.get("EMAIL_REMETENTE") ?? "Alarme <onboarding@resend.dev>";
 
 export type Evento = {
@@ -33,13 +26,7 @@ export async function aoRegistrarEvento(
   evento: Evento,
   sensor: Sensor,
 ): Promise<void> {
-  // Um unico UPDATE faz tres coisas ao mesmo tempo:
-  //   - so atualiza se o alarme estiver armado;
-  //   - so atualiza se o ultimo e-mail foi ha mais de 60 s;
-  //   - marca o horario deste envio.
-  // Se nenhuma linha for atualizada, nao devemos enviar e-mail.
-  // Fazer tudo num UPDATE so evita que dois sensores disparando juntos
-  // mandem dois e-mails.
+  // So atualiza (e envia) se estiver armado e o ultimo e-mail tiver mais de 60 s
   const limite = new Date(Date.now() - INTERVALO_MINIMO_SEGUNDOS * 1000).toISOString();
 
   const { data: config, error } = await supabase

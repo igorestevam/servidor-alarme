@@ -1,9 +1,4 @@
-# =====================================================================
-# Simula a ESP32 enviando eventos para a API (teste sem hardware).
-#
-# Uso (PowerShell):
-#   .\testes\testar-api.ps1 -Url "https://SEU-PROJETO.supabase.co/functions/v1/registrar-evento" -Chave "SUA_DEVICE_KEY"
-# =====================================================================
+# Simula a ESP32 enviando eventos para a API
 
 param(
     [Parameter(Mandatory = $true)] [string] $Url,

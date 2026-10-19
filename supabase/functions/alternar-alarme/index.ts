@@ -1,10 +1,4 @@
-// =====================================================================
-// API: POST /alternar-alarme
-// Chamada pelo botao do site para armar ou desarmar o alarme.
-//
-// Corpo esperado:  { "armado": true }  ou  { "armado": false }
-// Header esperado: X-Admin-Key: <senha definida em ADMIN_KEY>
-// =====================================================================
+// Arma ou desarma o alarme (chamada pelo botao do site)
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -14,7 +8,7 @@ const supabase = createClient(
 );
 const ADMIN_KEY = Deno.env.get("ADMIN_KEY");
 
-// Esta API e chamada pelo navegador (site), entao precisa de CORS.
+// Necessario para o navegador poder chamar a API
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",

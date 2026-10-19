@@ -1,8 +1,3 @@
-// =====================================================================
-// Site: lista sensores e mostra os ultimos eventos, atualizando a cada
-// 3 segundos.
-// =====================================================================
-
 const INTERVALO_MS = 3000;
 const LIMITE_EVENTOS = 50;
 
@@ -51,9 +46,6 @@ async function carregarSensores() {
   }
 }
 
-// Equivalente ao SELECT ... FROM eventos JOIN sensores ... ORDER BY
-// created_at DESC LIMIT 50. O "sensores(nome, local)" faz o JOIN pela
-// chave estrangeira sensor_codigo -> sensores.codigo.
 let carregando = false;
 
 async function carregarEventos() {
@@ -61,6 +53,7 @@ async function carregarEventos() {
   carregando = true;
 
   try {
+    // "sensores(nome, local)" faz o JOIN com a tabela de sensores
     const { data, error } = await cliente
       .from("eventos")
       .select("id, tipo, created_at, sensores(nome, local)")
@@ -99,7 +92,7 @@ async function carregarEventos() {
   }
 }
 
-// ---------- Armar / desarmar ----------
+// Armar / desarmar
 
 const URL_ALTERNAR = CONFIG.SUPABASE_URL + "/functions/v1/alternar-alarme";
 const statusAlarme = document.getElementById("status-alarme");
@@ -157,5 +150,4 @@ carregarSensores();
 carregarAlarme();
 carregarEventos();
 setInterval(carregarEventos, INTERVALO_MS);
-// O status tambem e atualizado periodicamente, caso seja alterado em outra aba.
 setInterval(carregarAlarme, INTERVALO_MS);

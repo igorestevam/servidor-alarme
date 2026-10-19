@@ -1,19 +1,11 @@
-// =====================================================================
-// API: POST /registrar-evento
-// Recebe o evento enviado pela ESP32 e grava na tabela "eventos".
-//
-// Corpo esperado:  { "sensor": "quarto-1", "evento": "movimento" }
-// Header esperado: X-Device-Key: <chave definida em DEVICE_KEY>
-// =====================================================================
+// Recebe o evento da ESP32 e grava no banco
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { aoRegistrarEvento } from "./notificacoes.ts";
 
-// Tipos de evento aceitos. Para criar um novo tipo, basta incluir aqui.
+// Tipos de evento aceitos
 const TIPOS_VALIDOS = ["movimento"];
 
-// SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY sao injetadas automaticamente
-// pelo Supabase. DEVICE_KEY e definida por nos (supabase secrets set).
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -32,8 +24,7 @@ Deno.serve(async (req) => {
     return responder(405, { ok: false, mensagem: "Use o metodo POST" });
   }
 
-  // 1. Chave do dispositivo (antes de tudo, para nao consultar o banco
-  //    com requisicoes de quem nao tem a chave).
+  // Valida a chave do dispositivo
   if (!DEVICE_KEY) {
     console.error("DEVICE_KEY nao configurada no servidor");
     return responder(500, { ok: false, mensagem: "Servidor sem chave configurada" });
@@ -42,7 +33,7 @@ Deno.serve(async (req) => {
     return responder(401, { ok: false, mensagem: "Chave do dispositivo invalida" });
   }
 
-  // 2. Ler o JSON
+  // Le e valida o JSON
   let corpo: { sensor?: unknown; evento?: unknown };
   try {
     corpo = await req.json();
@@ -60,7 +51,7 @@ Deno.serve(async (req) => {
     return responder(400, { ok: false, mensagem: "Campo 'evento' invalido" });
   }
 
-  // 3. Validar se o sensor existe e esta ativo
+  // Verifica se o sensor existe e esta ativo
   const { data: dadosSensor, error: erroSensor } = await supabase
     .from("sensores")
     .select("codigo, nome, local, ativo")
@@ -78,7 +69,7 @@ Deno.serve(async (req) => {
     return responder(403, { ok: false, mensagem: "Sensor desativado" });
   }
 
-  // 4. Inserir o evento. O created_at e gerado pelo banco (DEFAULT NOW()).
+  // Grava o evento (o horario e gerado pelo banco)
   const { data: novoEvento, error: erroInsert } = await supabase
     .from("eventos")
     .insert({ sensor_codigo: sensor, tipo: evento })
@@ -90,8 +81,7 @@ Deno.serve(async (req) => {
     return responder(500, { ok: false, mensagem: "Erro ao registrar evento" });
   }
 
-  // 5. Ponto de extensao (ex.: e-mail quando o alarme estiver armado).
-  //    Uma falha aqui nao pode perder o evento, que ja foi salvo.
+  // Envia o e-mail se armado; uma falha aqui nao desfaz o evento
   try {
     await aoRegistrarEvento(supabase, novoEvento, dadosSensor);
   } catch (erro) {
